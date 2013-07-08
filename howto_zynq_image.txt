@@ -1,0 +1,39 @@
+# install the dependencies
+sudo apt-get install xinetd tftpd tftp putty git-core 
+
+# prepare the enclustra demo image for upload
+git clone https://github.com/enclustra/binaries.git
+
+sudo cat > /etc/xinetd.d/tftp << _EOF
+service tftp
+{
+protocol = udp
+port = 69
+socket_type = dgram
+wait = yes
+user = nobody
+server = /usr/sbin/in.tftpd
+server_args = /tftpboot
+disable = no
+}
+_EOF
+
+sudo mkdir /tftpboot
+sudo chmod -R 777 /tftpboot
+sudo chown -R nobody /tftpboot
+service xinetd start
+cp binaries/MarsZX3_on_MarsPM3/* /tftpboot
+
+# install custom kernel tools
+sudo apt-get install gawk wget git-core diffstat unzip texinfo build-essential chrpath
+libsdl1.2-dev xterm lzop u-boot-tools
+
+git clone git://git.yoctoproject.org/poky
+cd poky
+git checkout -b netmodule 1.3
+cd ..
+git clone https://github.com/netmodule/meta-netmodule.git
+
+
+#git clone https://github.com/enclustra/enclustra_zynq_linux.git
+
