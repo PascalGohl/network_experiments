@@ -10,7 +10,8 @@ MENU="
 
 
 # Set up device and read from it.
-PORT=/dev/tty1
+PORT=/dev/ttyUSB0
+sudo chmod 777 $PORT
 ( stty 115200; cat; )& < PORT
 
 # Capture PID of background process so it is possible
@@ -40,14 +41,13 @@ pid=$$
 case $INPUT in
     1)
 # send commands and print also to stdout
+echo " " | tee $PORT
 echo "setenv ipaddr '192.168.1.100'" | tee $PORT
 echo "setenv serverip $IP_ADD" | tee $PORT
 
 # update of the boot image
 echo "mw.b 0x200000 0xFF 0x450000" | tee $PORT
-echo "echo "" | tee $port" | tee $PORT
 echo "tftp 0x200000 u-boot.bin" | tee $PORT
-echo "echo "" | tee $port" | tee $PORT
 echo "sf probe" | tee $PORT
 echo "sf erase 0 0x450000" | tee $PORT
 echo "sf write 0x200000 0 0x450000" | tee $PORT

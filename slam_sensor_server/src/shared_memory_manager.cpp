@@ -7,7 +7,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/types.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdlib.h>
 #include "shared_memory_manager.hpp"
 
 SharedMemoryManager::SharedMemoryManager(const int num_cams, const int image_size,
@@ -19,12 +22,22 @@ SharedMemoryManager::SharedMemoryManager(const int num_cams, const int image_siz
       + imu_size + 1
       + config_size + 1;
 
+  int device;
+  if ((device=open("/dev/slam-sensor", O_RDWR|O_SYNC))<0)
+   {
+    int myerr = errno;
+    printf("ERROR: device open failed (errno %d %s)\n", myerr,
+           strerror(myerr));
+    exit(-1);
+   }
+
   // allocate shared memory space
-  char * addr = (char *) mmap(0, mem_space, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-  if (addr == 0) {
+  char * addr = (char *) mmap(0, mem_space, PROT_READ|PROT_WRITE, MAP_SHARED, device, 0);
+  if (addr == MAP_FAILED) {
     int myerr = errno;
     printf("ERROR: mmap failed (errno %d %s)\n", myerr,
            strerror(myerr));
+    exit(-1);
   }
 
   // calculate data positions

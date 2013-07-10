@@ -24,15 +24,34 @@ sudo chown -R nobody /tftpboot
 service xinetd start
 cp binaries/MarsZX3_on_MarsPM3/* /tftpboot
 
+# embed custom FPGA config in bootloader
+sudo cat > /tftpboot/bootimage.bif << _EOF
+the_ROM_image:
+{
+	[bootloader]/tftpboot/FSBL_ZX3.elf
+	/tftpboot/slam_sensor.bit
+	/tftpboot/u-boot.elf
+}
+_EOF
+chmod 777 /tftpboot/bootimage.bif
+/opt/Xilinx/14.5/ISE_DS/ISE/bin/lin/bootgen -image /tftpboot/bootimage.bif -o i /tftpboot/u-boot.bin -w on
+chmod 777 /tftpboot/u-boot.bin
+
 # install custom kernel tools
 sudo apt-get install gawk wget git-core diffstat unzip texinfo build-essential chrpath
-libsdl1.2-dev xterm lzop u-boot-tools
+libsdl1.2-dev xterm lzop u-boot-tools lzop linux-source
+
 
 git clone git://git.yoctoproject.org/poky
 cd poky
 git checkout -b netmodule 1.3
 cd ..
 git clone https://github.com/netmodule/meta-netmodule.git
+
+# follow steps in Mars_ZX3_LinuxQuickstartGuide.pdf section 4.3.5
+
+
+ 
 
 
 #git clone https://github.com/enclustra/enclustra_zynq_linux.git

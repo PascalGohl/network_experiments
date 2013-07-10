@@ -8,6 +8,7 @@ using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
 
 #define IMAGE_SIZE 360960 //=752*480
+//#define IMAGE_SIZE 100 //=752*480
 #define TCP_PORT 13777
 #define UDP_PORT 13778
 

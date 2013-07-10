@@ -13,6 +13,7 @@
 #include "udp_server.hpp"
 #include "shared_memory_manager.hpp"
 
+//#define IMAGE_SIZE 100 // debug value
 #define IMAGE_SIZE 360960 //=752*480
 
 #define IMAGE_FREQUENCY 30 //=752*480
