@@ -30,23 +30,25 @@ static struct file_operations aslam_fops = {
     .open = aslam_open,
     .release = aslam_release,
     .mmap = aslam_mmap,
-    .read = aslam_read,
-    .write = aslam_write,
+//    .read = aslam_read,
+//    .write = aslam_write,
     .owner = THIS_MODULE, };
 
 // internal data
 // length of the memory area
 #define IMAGE_SIZE 360960 //=752*480
-static int npages = IMAGE_SIZE * 3 / PAGE_SIZE;
+static const int no_of_bytes = IMAGE_SIZE * 3;
+static const int npages = IMAGE_SIZE * 3 / PAGE_SIZE;
 
-#define REGBASE 0x41200000
+#define REGBASE 0xc2a7c000
+#define REGSIZE 16
 
 // pointer to the vmalloc'd area - alway page aligned
 static int *vmalloc_area;
 // pointer to the kmalloc'd area, rounded up to a page boundary
 static int *kmalloc_area;
 // pointer to the device register area
-void __iomem  *config_register;
+static void *config_register_ptr;
 // original pointer for kmalloc'd area as returned by kmalloc
 static void *kmalloc_ptr;
 
@@ -126,50 +128,114 @@ static int aslam_mmap(struct file *filp, struct vm_area_struct *vma) {
   return -EIO;
 }
 
-static int aslam_read(struct file *filp, char *buf,
-  size_t count, loff_t *f_pos) {
-
-  /* Buffer to read the device */
-  char parlelport_buffer;
-
-  readl(0x00000002, config_register + 0x0004);
-
-  /* We transfer data to user space */
-  copy_to_user(buf,&parlelport_buffer,1);
-
-  /* We change the reading position as best suits */
-  if (*f_pos == 0) {
-    *f_pos+=1;
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-static int aslam_write( struct file *filp, char *buf,
-  size_t count, loff_t *f_pos) {
-
-  char *tmp;
-
-  /* Buffer writing to the device */
-  char parlelport_buffer;
-
-  tmp=buf+count-1;
-  copy_from_user(&parlelport_buffer,tmp,1);
-
-  while (count--) {
-      writeb(*(ptr++), address);
-      wmb();
-  }
-
-  return 1;
-}
-
-static int aslam_init_register()
-{
-  // map the config register to pointer
-  config_register = ioremap(REGBASE, 16);
-}
+/*www.makelinux.net/ldd3/chp-9-sect-4*/
+//static int aslam_read(struct file *filp, char *buf, size_t count, loff_t *f_pos)
+//{
+//  size_t no_of_bytes_to_read;
+//  size_t max_no_bytes;
+//  char fpga_buffer[no_of_bytes];
+//  void* ptr;
+//
+//
+//  if(*f_pos >= no_of_bytes)//if read to the end of the file return 0 bytes
+//  {
+//    return 0;
+//  }
+//
+//  if(count < (no_of_bytes - *f_pos))//if they are asking for less than the maximum number of bytes
+//  {
+//    no_of_bytes_to_read = count;
+//  }
+//  else//otherwise only let them copy however many bytes are available
+//  {
+//    no_of_bytes_to_read = no_of_bytes;
+//  }
+//
+//  if(no_of_bytes_to_read > (no_of_bytes - *f_pos))//make sure they don't go off end of the fpga registers
+//  {
+//    no_of_bytes_to_read = (no_of_bytes - *f_pos);
+//  }
+//
+//  ptr = config_register_ptr;
+//  ptr += *f_pos * sizeof(char);//move to where they are in the file
+//
+//  memcpy_fromio(&fpga_buffer, ptr, no_of_bytes_to_read);
+//
+//
+//  copy_to_user(buf,fpga_buffer,no_of_bytes_to_read);
+//
+//  *f_pos += no_of_bytes_to_read;
+//  return no_of_bytes_to_read;
+//
+//}
+//
+//
+//static int aslam_write( struct file *filp, char *buf, size_t count, loff_t *f_pos)
+//{
+//
+//  char tmp[no_of_bytes];
+//  size_t no_of_bytes_to_write;
+//  void* ptr;
+//
+//  if(count <= no_of_bytes)
+//  {
+//    no_of_bytes_to_write = count;
+//  }
+//  else
+//  {
+//    no_of_bytes_to_write = no_of_bytes;
+//  }
+//
+//  if(no_of_bytes_to_write > (no_of_bytes - *f_pos))//make sure they don't go off end of file in read from their current position
+//  {
+//    no_of_bytes_to_write = (no_of_bytes - *f_pos);
+//  }
+//
+//
+//  ptr = config_register_ptr;
+//
+//  ptr += *f_pos * sizeof(char);//move to where they are in the file
+//
+//  copy_from_user(&tmp,buf,no_of_bytes_to_write);
+//
+//  memcpy_toio(ptr,&tmp,no_of_bytes_to_write);
+//
+//
+//  return no_of_bytes_to_write;
+//}
+//static int aslam_init_config_register()
+//{
+//  //  int result;
+//  //  result = check_mem_region(config_register, REGSIZE);
+//  //  if (result) {
+//  //    printk(KERN_INFO "SLAM_SENSOR: can't get I/O mem address 0x%x\n", config_register);
+//  //    return result;
+//  //  }
+//
+//  //  if (request_mem_region(config_register, REGSIZE, "slam_sensor") == NULL)
+//  //    return -1;
+//
+//  if(request_mem_region(REGBASE, REGSIZE, "slam_sensor") != NULL){
+//    printk(KERN_INFO "SLAM_SENSOR: request_mem_region failed\n");
+//    release_mem_region(REGBASE, REGSIZE);
+//    return -1;
+//  }
+//
+//  // map the config register to pointer
+//  config_register_ptr = ioremap(REGBASE, REGSIZE);
+//  if (config_register_ptr == 0) {
+//    printk(KERN_INFO "SLAM_SENSOR: can't map I/O mem address 0x%x\n", config_register_ptr);
+//    return -1;
+//  }
+//
+//  return 0;
+//}
+//
+//static int aslam_cleanup_config_register()
+//{
+//  iounmap(REGBASE);
+//  release_mem_region(REGBASE, REGSIZE);
+//}
 
 /* module initialization - called at module load time */
 static int aslam_init(void) {
@@ -185,7 +251,12 @@ static int aslam_init(void) {
   kmalloc_area = (int *) ((((unsigned long) kmalloc_ptr) + PAGE_SIZE - 1)
       & PAGE_MASK);
 
-  aslam_init_register();
+//  if (aslam_init_config_register() != 0) {
+//    ret = -EIO;
+//    aslam_cleanup_config_register();
+//    return ret;
+//  }
+
   //        /* allocate a memory area with vmalloc. */
   //        if ((vmalloc_area = (int *)vmalloc(NPAGES * PAGE_SIZE)) == NULL) {
   //                ret = -ENOMEM;
@@ -248,6 +319,8 @@ static void aslam_exit(void) {
   /* free the memory areas */
   //vfree(vmalloc_area);
   kfree(kmalloc_ptr);
+
+//  aslam_cleanup_config_register();
 }
 
 module_init( aslam_init);

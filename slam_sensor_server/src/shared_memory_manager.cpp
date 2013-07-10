@@ -13,6 +13,30 @@
 #include <stdlib.h>
 #include "shared_memory_manager.hpp"
 
+/*
+Shared memory layout:
+
+
+----------------
+1 Byte  | Image ready
+----------------
+n Bytes | Image Data
+----------------
+1 Byte  | Image ready
+----------------
+n Bytes | Image Data
+----------------
+1 Byte  | Image ready
+----------------
+n Bytes | Image Data
+----------------
+1 Byte  | Image ready
+----------------
+n Bytes | Image Data
+----------------
+1 Byte  |
+ */
+
 SharedMemoryManager::SharedMemoryManager(const int num_cams, const int image_size,
                            const int imu_size, const int config_size)
 : num_cams_(num_cams){

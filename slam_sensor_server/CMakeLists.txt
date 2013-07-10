@@ -7,5 +7,12 @@ link_directories(${Boost_LIBRARY_DIR})
 
 include_directories (include) 
 
-add_executable(main src/main.cpp src/tcp_server.cpp src/udp_server.cpp src/shared_memory_manager.cpp src/shared_memory.cpp)
+add_executable(main 
+src/main.cpp 
+src/tcp_server.cpp 
+src/udp_server.cpp 
+src/shared_memory_manager.cpp 
+src/shared_memory.cpp
+src/FPGAConfig.cpp
+)
 target_link_libraries( main ${Boost_LIBRARIES} )
