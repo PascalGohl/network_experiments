@@ -10,7 +10,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "FPGAConfig.h"
+#include "FPGA_config.h"
 
 /*
 FPGA Register layout:
@@ -68,5 +68,33 @@ FPGAConfig::~FPGAConfig() {
 }
 
 void FPGAConfig::print_config() {
-  *((volatile unsigned long *) (mapped_dev_base + GPIO_DATA_OFFSET))
+  printf("Current FPGA config:\n");
+  printf("Data Buffer Address: %lu\n", get_data_buffer_address());
+  printf("Data Buffer Size: %d\n", get_data_buffer_size());
+  printf("Number of Cameras: %d\n", get_num_cams());
+}
+
+unsigned long int FPGAConfig::get_data_buffer_address() {
+  unsigned long val = *((volatile unsigned long *) (mapped_dev_base));
+  return val;
+}
+
+void FPGAConfig::set_data_buffer_address(const unsigned long int add) {
+  *((volatile unsigned long *) (mapped_dev_base)) = add;
+}
+
+int FPGAConfig::get_data_buffer_size() {
+  int val = *((volatile int *) (mapped_dev_base + 8));
+  return val;
+}
+
+void FPGAConfig::set_data_buffer_size(const int size) {
+}
+
+int FPGAConfig::get_num_cams() {
+  int val = *((volatile int *) (mapped_dev_base + 12));
+  return val;
+}
+
+void FPGAConfig::set_num_cams(const int num_cams) {
 }

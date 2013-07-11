@@ -50,9 +50,18 @@ git clone https://github.com/netmodule/meta-netmodule.git
 
 # follow steps in Mars_ZX3_LinuxQuickstartGuide.pdf section 4.3.5
 
+# add custom kernel modul according to: http://www.yoctoproject.org/docs/current/kernel-manual/kernel-manual.html#incorporating-out-of-tree-modules
+# add another line to the local.conf which was just changed according to enclustra
+MACHINE = "zynq-zx3-pm3"
+MACHINE_EXTRA_RRECOMMENDS += "kernel-module-visensor"
 
- 
+cd ~/poky
+source oe-init-build-env
+bitbake visensor
+cp /home/pascal/poky/build/tmp/deploy/deb/zynq_zx3_pm3/visensor_0.1-r0_arm.deb /tftboot
 
 
+
+# currently not needed
 #git clone https://github.com/enclustra/enclustra_zynq_linux.git
 

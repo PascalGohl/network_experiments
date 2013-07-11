@@ -13,6 +13,6 @@ src/tcp_server.cpp
 src/udp_server.cpp 
 src/shared_memory_manager.cpp 
 src/shared_memory.cpp
-src/FPGAConfig.cpp
+src/FPGA_config.cpp
 )
 target_link_libraries( main ${Boost_LIBRARIES} )

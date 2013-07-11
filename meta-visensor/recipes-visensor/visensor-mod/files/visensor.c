@@ -32,7 +32,7 @@ static struct file_operations aslam_fops = {
     .open = aslam_open,
     .release = aslam_release,
     .mmap = aslam_mmap,
-    .read = aslam_read,
+//    .read = aslam_read,
 //    .write = aslam_write,
     .owner = THIS_MODULE, };
 
@@ -349,3 +349,4 @@ module_exit( aslam_exit);
 MODULE_DESCRIPTION("aslam test driver");
 MODULE_AUTHOR("Pascal J. Gohl");
 MODULE_LICENSE("GPL");
+

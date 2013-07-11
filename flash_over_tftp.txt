@@ -43,10 +43,11 @@ ubi part nand-device-tree
 ubi write 0x200000 dtb ${filesize}
 
 # reboot
-ifconfig eth0 192.168.100.100
+run rescboot
+#ifconfig eth0 192.168.1.100
 cd /tmp
-tftp -g -r dev-image-nm.rootfs.ubi 192.168.100.2
-ubiformat /dev/mtd2 -y -f /tmp/dev-image-nm.rootfs.ubi
+tftp -g -r dev-image-nm-aslam.rootfs.ubi 192.168.1.4
+ubiformat /dev/mtd2 -y -f /tmp/dev-image-nm-aslam.rootfs.ubi
 ubiattach /dev/ubi_ctrl -m 2
 halt
  
