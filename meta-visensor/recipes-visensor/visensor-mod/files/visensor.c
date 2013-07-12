@@ -32,7 +32,7 @@ static struct file_operations aslam_fops = {
     .open = aslam_open,
     .release = aslam_release,
     .mmap = aslam_mmap,
-//    .read = aslam_read,
+    .read = aslam_read,
 //    .write = aslam_write,
     .owner = THIS_MODULE, };
 
@@ -42,7 +42,7 @@ static struct file_operations aslam_fops = {
 static const int no_of_bytes = IMAGE_SIZE * 3;
 static const int npages = IMAGE_SIZE * 3 / PAGE_SIZE;
 
-#define REGBASE 0xc2a7c000
+#define REGBASE 0x7e200000
 #define REGSIZE 16
 
 // pointer to the vmalloc'd area - alway page aligned
@@ -173,19 +173,26 @@ static int aslam_mmap(struct file *filp, struct vm_area_struct *vma) {
 
 static int aslam_read(struct file *filp, char *buf, size_t count, loff_t *f_pos)
 {
-  long int memory_address;
+  int memory_address;
+  printk("kmalloc_area: [%p]\n", (void*)kmalloc_area);
+  printk("kmalloc_ptr: [%p]\n", (void*)kmalloc_ptr);
+  printk("virt_to_phys((void *) kmalloc_area): [%p]\n", (void*)virt_to_phys((void *) kmalloc_area));
 
-  if(f_pos != 0 || count != 8)
+  if(*f_pos != 0 || count != 4)
   {
-    printk("Tried to read invalid range: %d, %d", (int)f_pos, (int)count);
+    printk("Tried to read invalid range: %d, %d", (int)*f_pos, (int)count);
     return -EIO;
   }
 
-  memory_address = (long int)kmalloc_area;
+  memory_address = (int)virt_to_phys((void *) kmalloc_area);
 
-  copy_to_user(buf, &memory_address, 8);
+  copy_to_user(buf, &memory_address, 4);
 
-  return 8;
+//  char text[8];
+//  sprintf( text, "abcdefg" );
+//  copy_to_user(buf, text, 8);
+
+  return 4;
 
 }
 
