@@ -14,6 +14,15 @@ doku
 *.cfgc
 *.dox
 *.wikidoc
+*.ko
+*.mk
+*.mod
+*modules.order
+*.mod.c
+*.o.cmd
+*.ko.cmd
+*.symvers
+
 __init__*
 */src/*/cfg
 */cfg/cpp
