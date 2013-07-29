@@ -58,10 +58,21 @@ MACHINE_EXTRA_RRECOMMENDS += "kernel-module-visensor"
 cd ~/poky
 source oe-init-build-env
 bitbake visensor
+
+
 cp /home/pascal/poky/build/tmp/deploy/deb/zynq_zx3_pm3/visensor_0.1-r0_arm.deb /tftboot
-
-
 
 # currently not needed
 #git clone https://github.com/enclustra/enclustra_zynq_linux.git
+
+##################
+# HowTo Build the Device Tree
+##################
+
+# generate the .dts file with XDK
+# cd into folder with .dts file
+~/poky/build/tmp/sysroots/x86_64-linux/usr/bin/dtc  -I dts -O dtb -o  xilinx.dtb xilinx.dts
+cp xilinx.dtb /tftpboot/devicetree.dtb
+
+
 

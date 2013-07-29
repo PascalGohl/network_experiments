@@ -32,12 +32,12 @@ sf write 0x00200000 0x00A00000 ${ramdisk_size}
 nand erase.part nand-linux
 ubi part nand-linux
 ubi create kernel
+tftp 0x200000 ${kernel_image}
+ubi write 0x200000 kernel ${filesize}
+
 nand erase.part nand-device-tree
 ubi part nand-device-tree
 ubi create dtb
-tftp 0x200000 ${kernel_image}
-ubi part nand-linux
-ubi write 0x200000 kernel ${filesize}
 tftp 0x200000 ${devicetree_image}
 ubi part nand-device-tree
 ubi write 0x200000 dtb ${filesize}
