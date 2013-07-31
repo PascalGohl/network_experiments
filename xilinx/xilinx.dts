@@ -103,20 +103,20 @@
 			xlnx,tri-default = <0xffffffff>;
 			xlnx,tri-default-2 = <0xffffffff>;
 		} ;
-		axi_iic_0: i2c@41600000 {
-			compatible = "xlnx,axi-iic-1.02.a", "xlnx,xps-iic-2.00.a";
-			reg = < 0x41600000 0x10000 >;
-			interrupt-parent = <&ps7_scugic_0>;
-			interrupts = < 0 26 4 >;
-			xlnx,has-interrupt = <0x1>;
-			xlnx,gpo-width = <0x1>;
-			xlnx,iic-freq = <0x61a80>;
-			xlnx,instance = "axi_iic_0";
-			xlnx,scl-inertial-delay = <0x0>;
-			xlnx,sda-inertial-delay = <0x0>;
-			xlnx,sda-level = <0x1>;
-			xlnx,ten-bit-adr = <0x0>;
-		} ;
+/*
+*		axi_iic_0: i2c@41600000 {
+*			compatible = "xlnx,axi-iic-1.02.a", "xlnx,xps-iic-2.00.a";
+*			interrupts = < 0 59 4 >;
+*			reg = < 0x41600000 0x10000 >;
+*			xlnx,gpo-width = <0x1>;
+*			xlnx,iic-freq = <0x61a80>;
+*			xlnx,instance = "axi_iic_0";
+*			xlnx,scl-inertial-delay = <0x0>;
+*			xlnx,sda-inertial-delay = <0x0>;
+*			xlnx,sda-level = <0x1>;
+*			xlnx,ten-bit-adr = <0x0>;
+*		} ;
+*/
 		lvds_input_0: lvds-input@7e200000 {
 			compatible = "xlnx,lvds-input-1.00.a";
 			reg = < 0x7e200000 0x10000 >;

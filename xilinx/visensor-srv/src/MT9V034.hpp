@@ -8,6 +8,8 @@
 #ifndef MT9V034_HPP_
 #define MT9V034_HPP_
 
+#include <string>
+
 #include "I2CBus.h"
 
 class MT9V034 {

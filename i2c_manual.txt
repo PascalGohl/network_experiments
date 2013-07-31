@@ -1,0 +1,58 @@
+1. Write the IIC device address to the TX_FIFO.
+devmem2 0x41600108 w 0x48
+2. Write data to TX_FIFO.
+
+3. Write to Control Register (CR) to set MSMS = 1 and TX = 1.
+devmem2 0x41600100 w 0x0d
+4. Continue writing data to TX_FIFO.
+5. Wait for transmit FIFO empty interrupt. This implies the IIC has throttled the bus.
+6. Write to CR to set RSTA = 1.
+7. Write IIC device address to TX_FIFO.
+8. Write all data except last byte to TX_FIFO.
+9. Wait for transmit FIFO empty interrupt. This implies the IIC has throttled the bus.
+10. Write to CR to set MSMS = 0. The IIC generates a stop condition at the end of the last byte. 
+11. Write last byte of data to TX_FIFO.
+
+******************
+
+Read 4 Bytes from an IIC Slave EEPROM Device Addressed as 0x34
+The data is at EEPROM address 0x33.
+First, a write access is necessary to set the EEPROM address, then a repeated start follows with the read accesses:
+1. Check all FIFOs empty and bus not busy by reading the status register
+2. Write 0x134 to TX_FIFO (set start bit, device address to 0x34, write access)
+3. Write 0x33 to TX_FIFO (EEPROM address for data)
+4. Write 0x135 to TX_FIFO (set start bit for repeated start, device address 0x34, read access)
+5. Write 0x204 to TX_FIFO (set stop bit, 4 bytes to be received by the AXI IIC)
+6. Wait for RX_FIFO not empty
+a. Read RX_FIFO byte
+b. If the fourthbyte is read, exit; otherwise, continue checking RX_FIFO not empty
+*******************
+
+1. Write the IIC peripheral device addresses for the first slave device to the TX_FIFO. Write the Receive FIFO 
+Programmable Depth Interrupt Register (RX_FIFO_PIRQ) to the total message length (call it M) minus two. It 
+is assume that the message is less than the maximum FIFO depth of 16 bytes. 
+2. Set Control Register (CR) MSMS = 1 and Control Register (CR) TX = 0.
+3. Wait for the receive FIFO interrupt indicating M-1 bytes have been received.
+4. Set Control Register (CR) TXAK = 1.
+TXAK causes the AXI IIC controller to not-acknowledge the next byte received indicating to the slave 
+transmitter that the master receiver will accept no further data. TXAK is set before reading data from the 
+RX_FIFO, because as soon as a read from the RX_FIFO has occurred, the throttle condition is removed and the 
+opportunity to set the bit is lost.
+5. Read all M-1 data bytes from the RX_FIFO. Set the RX_FIFO_PIRQ to 0 so that the last byte, soon to be received, 
+causes the receive FIFO full interrupt to be raised.
+6. Clear the receive FIFO full interrupt now because after a single byte is retrieved from the RX_FIFO the throttle 
+condition is removed by the controller and the interrupt flag can be lowered (cleared).
+7. Wait for the receive FIFO full interrupt.
+8. The controller will be throttled again with a full RX_FIFO. Set Control Register (CR) RSTA = 1. Write the 
+peripheral IIC device address for a new (or same) IIC slave to the TX_FIFO.
+9. Read the final byte of data (of the first message) from the RX_FIFO. 
+This terminates the throttle condition so the receive FIFO full interrupt can be cleared at this time. It also 
+permits the controller to issue the IIC restart and transmit the new slave address available in the TX_FIFO. Also 
+set the RX_FIFO_PIRQ to be 2 less than the total 2nd message length (call it N) in anticipation of receiving the 
+message of N-1 bytes from the second slave device.
+10. Wait for the receive FIFO full interrupt.
+11. Set TXAK = 1. Write the RX_FIFO_PIRQ to be 0, read the message from the RX_FIFO and clear the receive FIFO 
+full interrupt.
+12. Wait for the receive FIFO full interrupt (signalling the last byte is received).
+13. Set MSMS = 0 in anticipation of giving up the bus via generation of an IIC Stop.
+14. Read the final data byte of the second message
