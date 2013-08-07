@@ -6,7 +6,7 @@
 
 using boost::asio::ip::tcp;
 
-#define IMAGE_SIZE 360960 //=752*480
+#define IMAGE_SIZE 3609600 //=752*480
 
 int main(int argc, char* argv[])
 {
@@ -31,21 +31,34 @@ int main(int argc, char* argv[])
 
 		for (;;)
 		{
-			boost::array<char, IMAGE_SIZE> buf;
+//			boost::array<char, IMAGE_SIZE+1> buf;
+		  unsigned char buf[IMAGE_SIZE];
 			boost::system::error_code error;
 
-			//      size_t len = socket.read_some(boost::asio::buffer(buf), error);
+      printf("waiting for image.\n");
+//      size_t len = socket.read_some(boost::asio::buffer(buf), error);
 			size_t len = boost::asio::read(socket, boost::asio::buffer(buf), error);
 
 			if (error == boost::asio::error::eof)
+			{
+	      printf("connection closed\n");
 				break; // Connection closed cleanly by peer.
+			}
 			else if (error)
 				throw boost::system::system_error(error); // Some other error.
 
 
 			boost::posix_time::ptime time_now(boost::posix_time::microsec_clock::local_time());
-			std::printf("frequency %f\n", (double)(time_now - last_time).total_microseconds());
+			std::printf("len %d, delta t %f\n",len, (double)(time_now - last_time).total_microseconds());
 			last_time =boost::posix_time::microsec_clock::local_time();
+
+			for(int i = 0; i<40; i+=4)
+			{
+			  unsigned int * word = (unsigned int *)(buf + i);
+		    // Dereference and convert it.
+			  printf("%x ", (*word));
+			}
+      printf("\n");
 		}
 	}
 	catch (std::exception& e)

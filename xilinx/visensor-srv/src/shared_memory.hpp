@@ -8,7 +8,7 @@
 #ifndef SHARED_MEMORY_HPP_
 #define SHARED_MEMORY_HPP_
 
-#define HEADER_SIZE 1
+#define HEADER_SIZE 0
 
 class SharedMemory {
  public:

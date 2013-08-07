@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "I2CBus.h"
+#include "I2CBusRaw.h"
 
 class MT9V034 {
 public:
@@ -21,7 +21,7 @@ public:
 	void power_off();
 
 private:
-	I2CBus i2c_bus;
+	I2CBusRaw i2c_bus;
 };
 
 #endif /* MT9V034_HPP_ */

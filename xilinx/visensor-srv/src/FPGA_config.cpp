@@ -23,6 +23,10 @@ FPGA Register layout:
  ----------------------------------------------------------------------------
  */
 
+#define BUFFER_ADD_OFFSET 4
+#define BUFFER_SIZE_OFFSET 0
+#define NUM_CAMS_OFFSET 8
+
 #define MAP_SIZE 16
 #define MAP_MASK (MAP_SIZE - 1)
 
@@ -72,28 +76,28 @@ void FPGAConfig::print_config() {
 }
 
 int FPGAConfig::get_data_buffer_address() {
-	int val = *((volatile int *) (mapped_dev_base));
+	int val = *((volatile int *) (mapped_dev_base + BUFFER_ADD_OFFSET));
 	return val;
 }
 
 void FPGAConfig::set_data_buffer_address(const int address) {
-	*((volatile int *) (mapped_dev_base)) = address;
+	*((volatile int *) (mapped_dev_base + BUFFER_ADD_OFFSET)) = address;
 }
 
 int FPGAConfig::get_data_buffer_size() {
-	int val = *((volatile int *) (mapped_dev_base + 4));
+	int val = *((volatile int *) (mapped_dev_base + BUFFER_SIZE_OFFSET));
 	return val;
 }
 
 void FPGAConfig::set_data_buffer_size(const int size) {
-	*((volatile int *) (mapped_dev_base + 4)) = size;
+	*((volatile int *) (mapped_dev_base + BUFFER_SIZE_OFFSET)) = size;
 }
 
 int FPGAConfig::get_num_cams() {
-	int val = *((volatile int *) (mapped_dev_base + 8));
+	int val = *((volatile int *) (mapped_dev_base + NUM_CAMS_OFFSET));
 	return val;
 }
 
 void FPGAConfig::set_num_cams(const int num_cams) {
-	*((volatile int *) (mapped_dev_base + 8)) = num_cams;
+	*((volatile int *) (mapped_dev_base + NUM_CAMS_OFFSET)) = num_cams;
 }

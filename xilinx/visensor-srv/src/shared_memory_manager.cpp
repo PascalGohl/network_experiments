@@ -20,19 +20,19 @@ Shared memory layout:
 
 
 ----------------
-1 Byte  | Image ready
+4 Byte  | Image ready
 ----------------
 n Bytes | Image Data
 ----------------
-1 Byte  | Image ready
+4 Byte  | Image ready
 ----------------
 n Bytes | Image Data
 ----------------
-1 Byte  | Image ready
+4 Byte  | Image ready
 ----------------
 n Bytes | Image Data
 ----------------
-1 Byte  | Image ready
+4 Byte  | Image ready
 ----------------
 n Bytes | Image Data
 ----------------
@@ -44,9 +44,9 @@ SharedMemoryManager::SharedMemoryManager(const int num_cams, const int image_siz
 : num_cams_(num_cams){
 
 	// calculate needed space incl data available byte
-	int mem_space = (image_size + 1) * num_cams_
-			+ imu_size + 1
-			+ config_size + 1;
+	int mem_space = (image_size + HEADER_SIZE) * num_cams_
+			+ imu_size + HEADER_SIZE
+			+ config_size + HEADER_SIZE;
 
 	if ((fpga_device=open("/dev/slam-sensor", O_RDWR|O_SYNC))<0)
 	{
@@ -58,6 +58,7 @@ SharedMemoryManager::SharedMemoryManager(const int num_cams, const int image_siz
 
 	// allocate shared memory space
 	char * addr = (char *) mmap(0, mem_space, PROT_READ|PROT_WRITE, MAP_SHARED, fpga_device, 0);
+//	printf("mmap address: 0x%x\n", addr);
 	if (addr == MAP_FAILED) {
 		int myerr = errno;
 		printf("ERROR: mmap failed (errno %d %s)\n", myerr,

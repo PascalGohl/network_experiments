@@ -50,10 +50,7 @@ void TcpServer::send_data(SharedMemory& data) {
 
   try
   {
-    write(
-        socket_,
-        boost::asio::buffer(data.data(), data.size()),
-        boost::asio::transfer_at_least(data.size()));
+	  socket_.send(boost::asio::buffer(data.data(), data.size()));
   }
   catch (std::exception& e){
     printf("client disconnected\n");

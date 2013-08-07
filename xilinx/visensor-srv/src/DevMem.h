@@ -8,6 +8,8 @@
 #ifndef DEVMEM_H_
 #define DEVMEM_H_
 
+#include <sys/types.h>
+
 class DevMem {
 public:
 	DevMem();
