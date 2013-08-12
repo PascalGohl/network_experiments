@@ -4,30 +4,39 @@
 
 #include <boost/asio.hpp>
 
-#include "shared_memory.hpp"
+typedef struct
+{
+	uint32_t timestamp;
+	uint32_t data_size;
+	uint32_t data_id;
+} DataHeader;
 
 class TcpServer {
- public:
-  TcpServer(boost::asio::io_service& io_service);
-  virtual ~TcpServer();
+public:
+	TcpServer(boost::asio::io_service& io_service, unsigned short int port);
+	virtual ~TcpServer();
 
-  void send_data(SharedMemory& data);
-  bool has_connection(){
-    return has_connection_;
-  }
-  const boost::asio::ip::tcp::endpoint getEndpoint();
+	void send_data(char* data, DataHeader& header);
+	bool has_connection(){
+		return has_connection_;
+	}
+	const boost::asio::ip::tcp::endpoint getEndpoint();
 
- private:
-  void accept_connection();
-  void handle_accept(const boost::system::error_code& error);
-//  void handle_writer(const boost::system::error_code& error,
-//                     std::size_t bytes_transferred, SharedMemory& data);
+private:
+	void read();
+	void handle_read(const boost::system::error_code& error,
+			std::size_t bytes_transferred);
+	void accept_connection();
+	void handle_accept(const boost::system::error_code& error);
+	//  void handle_writer(const boost::system::error_code& error,
+	//                     std::size_t bytes_transferred, SharedMemory& data);
 
- private:
-  boost::asio::io_service& io_service_;
-  boost::asio::ip::tcp::socket socket_;
-  boost::asio::ip::tcp::acceptor acceptor_;
-  bool has_connection_;
+private:
+	boost::asio::io_service& io_service_;
+	boost::asio::ip::tcp::socket socket_;
+	boost::asio::ip::tcp::acceptor acceptor_;
+	bool has_connection_;
+	boost::array<char, 1024> buffer_;
 };
 
 #endif /* TCP_SERVER_HPP_ */

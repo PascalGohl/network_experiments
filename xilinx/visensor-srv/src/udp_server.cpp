@@ -11,6 +11,7 @@
 using boost::asio::ip::udp;
 
 #define MAX_PAKET_SIZE 1500
+#define IMAGE_SIZE 1500
 #define UDP_PORT 13779
 
 UdpServer::UdpServer(boost::asio::io_service& io_service)
@@ -19,11 +20,11 @@ UdpServer::UdpServer(boost::asio::io_service& io_service)
 
 UdpServer::~UdpServer() {}
 
-void UdpServer::send_data(const int cam, SharedMemory& data, const udp::endpoint& remote_endpoint)
+void UdpServer::send_data(const int cam, char* data, const udp::endpoint& remote_endpoint)
 {
-  size_t sendlen = std::min(data.size(), MAX_PAKET_SIZE);
-  size_t remlen  = data.size();
-  const char *curpos = data.data();
+  size_t sendlen = std::min(IMAGE_SIZE, MAX_PAKET_SIZE);
+  size_t remlen  = IMAGE_SIZE;
+  const char *curpos = data;
 
   boost::array<int, 2> header = {cam, 0};
 

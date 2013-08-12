@@ -10,14 +10,12 @@
 
 #include <boost/asio.hpp>
 
-#include "shared_memory.hpp"
-
 class UdpServer {
  public:
   UdpServer(boost::asio::io_service& io_service);
   virtual ~UdpServer();
 
-  void send_data(const int cam, SharedMemory& data, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void send_data(const int cam, char* data, const boost::asio::ip::udp::endpoint& remote_endpoint);
 
  private:
   void handle_send(char* data);

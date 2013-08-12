@@ -18,7 +18,6 @@
 /*
 Shared memory layout:
 
-
 ----------------
 4 Byte  | Image ready
 ----------------

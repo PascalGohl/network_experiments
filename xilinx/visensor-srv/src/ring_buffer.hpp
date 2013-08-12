@@ -6,7 +6,7 @@
  */
 
 #ifndef SHARED_MEMORY_HPP_
-#define SHARED_MEMORY_HPP_
+#define RING_BUFFER_HPP_
 
 #define HEADER_SIZE 0
 

@@ -8,7 +8,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <errno.h>
-#include "shared_memory.hpp"
+#include "ring_buffer.hpp"
 
 
 SharedMemory::SharedMemory()

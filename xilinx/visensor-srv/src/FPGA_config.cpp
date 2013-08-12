@@ -69,10 +69,12 @@ FPGAConfig::~FPGAConfig() {
 }
 
 void FPGAConfig::print_config() {
+	printf("==============================\n");
 	printf("Current FPGA config:\n");
 	printf("Data Buffer Address: 0x%08x\n", get_data_buffer_address());
 	printf("Data Buffer Size: %d\n", get_data_buffer_size());
 	printf("Number of Cameras: %d\n", get_num_cams());
+	printf("==============================\n");
 }
 
 int FPGAConfig::get_data_buffer_address() {

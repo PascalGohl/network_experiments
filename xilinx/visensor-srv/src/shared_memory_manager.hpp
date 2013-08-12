@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include "shared_memory.hpp"
+#include "ring_buffer.hpp"
 
 class SharedMemoryManager {
  public:
