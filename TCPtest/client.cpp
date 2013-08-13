@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 
     boost::posix_time::ptime last_time(boost::posix_time::microsec_clock::local_time());
 
-    cv::namedWindow( "Camera 0", CV_WINDOW_AUTOSIZE);// Create a window for display.
+    cv::namedWindow( "Camera 0", CV_WINDOW_NORMAL);// Create a window for display.
     cv::waitKey(1);
     for (;;)
     {

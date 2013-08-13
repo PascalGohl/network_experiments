@@ -10,29 +10,23 @@
 
 #include <vector>
 
-#include "ring_buffer.hpp"
+#include "SharedRingBuffer.hpp"
 
 class SharedMemoryManager {
  public:
-  SharedMemoryManager(const int num_cams, const int image_size, const int imu_size,
-               const int config_size);
+  SharedMemoryManager();
   virtual ~SharedMemoryManager();
 
-  int getNumCams(){
-    return num_cams_;
-  }
   int getMemoryAddress();
-
-  SharedMemory& cam(const int cam_id);
-  SharedMemory& imu();
-  SharedMemory& config();
+  void addRingBuffer(SharedRingBuffer buffer);
+  SharedRingBuffer& getRingBuffer(int id);
+  void printMemoryLayout();
 
  private:
-  int num_cams_;
+  int allocated_memory_size_;
   int fpga_device;
-  std::vector<SharedMemory> cams_;
-  SharedMemory imu_;
-  SharedMemory config_;
+  char * mmap_start_address_;
+  std::vector<SharedRingBuffer> buffers_;
 };
 
 #endif /* SHARED_MEMORY_MANAGER_HPP_ */

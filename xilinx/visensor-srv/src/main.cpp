@@ -33,8 +33,8 @@ void cam_faker(const boost::system::error_code& /*e*/,
 		boost::asio::deadline_timer* t,
 		SharedMemoryManager* shared_memory)
 {
-	shared_memory->cam(0).setNewDataAvailable(true);
-	shared_memory->cam(1).setNewDataAvailable(true);
+//	shared_memory->cam(0).setNewDataAvailable(true);
+//	shared_memory->cam(1).setNewDataAvailable(true);
 
 	// restart the timer
 	t->expires_at(t->expires_at() + boost::posix_time::milliseconds(33));
@@ -47,7 +47,7 @@ void imu_faker(const boost::system::error_code& /*e*/,
 		boost::asio::deadline_timer* t,
 		SharedMemoryManager* shared_memory)
 {
-	shared_memory->imu().setNewDataAvailable(true);
+//	shared_memory->imu().setNewDataAvailable(true);
 
 	// restart the timer
 	t->expires_at(t->expires_at() + boost::posix_time::milliseconds(50));
@@ -115,17 +115,20 @@ int main(void)
 	//	exit(0); // for faster debug
 
 	// init shared memory
-	SharedMemoryManager shared_memory(1, IMAGE_SIZE, 10, 10);
+	SharedMemoryManager shared_memory;
+	shared_memory.addRingBuffer(SharedRingBuffer(IMAGE_SIZE, 3));
+	shared_memory.printMemoryLayout();
+
 
 	FPGAConfig fpga_config;
 	fpga_config.set_data_buffer_address(shared_memory.getMemoryAddress());
-	fpga_config.set_data_buffer_size(IMAGE_SIZE);
+	fpga_config.set_data_buffer_size(IMAGE_SIZE*3);
 	//	fpga_config.set_num_cams(1);
 	fpga_config.print_config();
 
 	MT9V034 cam0;
 	cam0.power_on();
-	//	exit(0); // for faster debug
+		exit(0); // for faster debug
 
 	//	char * data = shared_memory.cam(0).data();
 	//	printf("Adress: 0x%x\n", data);
@@ -177,7 +180,7 @@ int main(void)
 			//			boost::asio::ip::udp::endpoint udp_endpoint(
 			//					tcp_server.getEndpoint().address(), 13778);
 
-			for(int i = 0; i < shared_memory.getNumCams(); i++)
+			for(int i = 0; i < 1; i++)
 			{
 
 				//				if(shared_memory.cam(i).newDataAvailable())
@@ -204,9 +207,9 @@ int main(void)
 			{
 				DataHeader header_cam;
 				header_cam.timestamp = 0;
-				header_cam.data_size = shared_memory.cam(i).size();
+				header_cam.data_size = shared_memory.getRingBuffer(0).size();
 				header_cam.data_id = 100+i;
-				tcp_server.send_data(shared_memory.cam(i).data(), header_cam);
+				tcp_server.send_data(shared_memory.getRingBuffer(0).data(), header_cam);
 			}
 
 
