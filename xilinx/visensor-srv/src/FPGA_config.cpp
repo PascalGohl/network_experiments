@@ -12,22 +12,30 @@
 
 #include "FPGA_config.hpp"
 
-/*
-FPGA Register layout:
+// FPGA Registers:
+#define FPGA_SOFTWARE_VERSION  0x0000  // a increment of 100 means new incompatible interface
 
-0 Bytes         4 Bytes           8 Bytes           12 Bytes            16 Bytes
- ----------------------------------------------------------------------------
-|   Data Buffer Mem. Addr.         |   Buffer Size     |  Number of Cameras  |
- ----------------------------------------------------------------------------
-|   Camera Rate  |    IMU Rate     |
- ----------------------------------------------------------------------------
- */
+// Hardware register start addresses
+#define CAM0_REGISTER_OFFSET   0X0010
+#define CAM1_REGISTER_OFFSET   0X0030
+#define CAM2_REGISTER_OFFSET   0X0050
+#define CAM3_REGISTER_OFFSET   0X0070
+
+// Camera registers
+#define CAM_CONTROL            0x0000   // | 0: ENABLE | 1:....
+#define CAM_TRIGGER_FREQUENCY  0x0004
+#define CAM_BUFFER_ADDRESS     0x0008
+#define CAM_BUFFER_SIZE        0x000C
+#define CAM_FPGA_POINTER       0x0010
+#define CAM_LINUX_POINTER      0x0014
+#define CAM_RESERVED1          0x0018
+#define CAM_RESERVED2          0x001C
 
 #define BUFFER_ADD_OFFSET 4
 #define BUFFER_SIZE_OFFSET 0
 #define NUM_CAMS_OFFSET 8
 
-#define MAP_SIZE 16
+#define MAP_SIZE 128
 #define MAP_MASK (MAP_SIZE - 1)
 
 FPGAConfig::FPGAConfig(){

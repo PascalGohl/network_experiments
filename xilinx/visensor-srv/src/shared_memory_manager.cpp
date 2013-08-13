@@ -127,7 +127,11 @@ void SharedMemoryManager::addRingBuffer(SharedRingBuffer buffer) {
   }
 
   // check if new buffer fits into memory space
-  if()
+  if((int)buffer_start_address + buffer.size()*buffer.length() > allocated_memory_size_)
+  {
+    printf("ERROR: Desired buffer layout is longer than allocated memory");
+    return;
+  }
   buffer.setAddr(buffer_start_address);
   buffers_.push_back(buffer);
 }
