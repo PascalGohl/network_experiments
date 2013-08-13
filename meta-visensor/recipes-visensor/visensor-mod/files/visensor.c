@@ -339,7 +339,7 @@ static int aslam_init(void) {
     kmalloc_area[i + 1] = (0xbeef << 16) + i;
   }
 
-  bytes_in_memory = (npages + 2) * PAGE_SIZE;
+  bytes_in_memory = npages * PAGE_SIZE;
   printk("allocated %d bytes in memory\n", bytes_in_memory);
   return ret;
 }
