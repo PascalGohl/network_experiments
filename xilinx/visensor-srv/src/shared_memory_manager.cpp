@@ -132,7 +132,7 @@ void SharedMemoryManager::addRingBuffer(SharedRingBuffer buffer) {
     printf("ERROR: Desired buffer layout is longer than allocated memory");
     return;
   }
-  buffer.setAddr(buffer_start_address);
+//  buffer.setAddr(buffer_start_address);
   buffers_.push_back(buffer);
 }
 

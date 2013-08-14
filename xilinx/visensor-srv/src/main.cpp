@@ -12,16 +12,12 @@
 #include "tcp_server.hpp"
 #include "udp_server.hpp"
 #include "shared_memory_manager.hpp"
-#include "FPGA_config.hpp"
 #include <time.h>
 
 //#include "i2c-dev.h"
 //#include "i2cbusses.h"
 
 #include "MT9V034.hpp"
-
-//#define IMAGE_SIZE 100 // debug value
-#define IMAGE_SIZE 360960 //=752*480
 
 #define IMAGE_FREQUENCY 60
 #define IMU_FREQUENCY 20
@@ -115,18 +111,11 @@ int main(void)
   //	exit(0); // for faster debug
 
   // init shared memory
-  SharedMemoryManager shared_memory;
-  shared_memory.addRingBuffer(SharedRingBuffer(IMAGE_SIZE, 8));
-  shared_memory.printMemoryLayout();
+//  SharedMemoryManager shared_memory;
+//  shared_memory.addRingBuffer(SharedRingBuffer(IMAGE_SIZE, 8));
+//  shared_memory.printMemoryLayout();
 
-
-  FPGAConfig fpga_config;
-  fpga_config.set_data_buffer_address(shared_memory.getMemoryAddress());
-  fpga_config.set_data_buffer_size(IMAGE_SIZE*8);
-  //	fpga_config.set_num_cams(1);
-  fpga_config.print_config();
-
-  MT9V034 cam0;
+  MT9V034 cam0(0x7e200000);
   cam0.power_on();
   //	exit(0); // for faster debug
 
@@ -140,6 +129,7 @@ int main(void)
   //	}
   //	printf("\n");
   //	exit(0);
+
 
   try
   {
@@ -180,48 +170,32 @@ int main(void)
       //			boost::asio::ip::udp::endpoint udp_endpoint(
       //					tcp_server.getEndpoint().address(), 13778);
 
-      for(int i = 0; i < 1; i++)
-      {
-
-        //				if(shared_memory.cam(i).newDataAvailable())
-        //				{
-        //					udp_server.send_data(i, shared_memory.cam(0), udp_endpoint);
-        //					shared_memory.cam(i).setNewDataAvailable(false);
-        //				}
-        //
-        //				if(shared_memory.imu().newDataAvailable())
-        //				{
-        //					tcp_server.send_data(shared_memory.imu());
-        //					shared_memory.imu().setNewDataAvailable(false);
-        //				}
-        //
-        //				if(shared_memory.config().newDataAvailable())
-        //				{
-        //					tcp_server.send_data(shared_memory.config());
-        //					shared_memory.config().setNewDataAvailable(false);
-        //				}
-      }
-
       //			printf("send images\n");
       for(int i = 0; i<1; i++)
       {
+        if(cam0.newDataAvailable() == false)
+          continue;
         DataHeader header_cam;
         header_cam.timestamp = 0;
-        header_cam.data_size = shared_memory.getRingBuffer(0).data_size();
+        header_cam.data_size = cam0.data_size();
         header_cam.data_id = 100+i;
-        tcp_server.send_data(shared_memory.getRingBuffer(0).data(), header_cam);
-        shared_memory.getRingBuffer(0).movePointer();
+//        header_cam.print();
+        tcp_server.send_data(cam0.data(), header_cam);
+        cam0.movePointer();
       }
 
 
-      t1.wait();
-      t1.expires_from_now(boost::posix_time::milliseconds(1000/IMAGE_FREQUENCY));
+//      t1.wait();
+//      t1.expires_from_now(boost::posix_time::milliseconds(1000/IMAGE_FREQUENCY));
     }
   }
   catch (std::exception& e)
   {
     std::cerr << e.what() << std::endl;
   }
+
+  printf("power off cameras");
+  cam0.power_off();
 
   return 0;
 }

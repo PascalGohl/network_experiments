@@ -80,9 +80,10 @@ void TcpServer::send_data(char * data, DataHeader& header) {
 	header_payload[1]=htonl(header.data_size);
 	header_payload[2]=htonl(header.data_id);
 
-    std::vector<boost::asio::const_buffer> buffers;
-    buffers.push_back(boost::asio::buffer(header_payload, sizeof(header_payload)));
-    buffers.push_back(boost::asio::buffer(data, header.data_size));
+	std::vector<boost::asio::const_buffer> buffers;
+	buffers.push_back(boost::asio::buffer(header_payload, sizeof(header_payload)));
+	buffers.push_back(boost::asio::buffer(data, header.data_size));
+//	printf("data pointer %p\n", data);
 	try
 	{
 //		socket_.send(boost::asio::buffer(data.data(), data.size()));

@@ -9,6 +9,13 @@ typedef struct
 	uint32_t timestamp;
 	uint32_t data_size;
 	uint32_t data_id;
+
+	void print()
+	{
+	  printf("timestamp: %d\n",timestamp);
+    printf("data_size: %d\n",data_size);
+    printf("data_id: %d\n",data_id);
+	}
 } DataHeader;
 
 class TcpServer {

@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
           len = boost::asio::read(socket, boost::asio::buffer(buf, header.data_size), error);
           break;
         default:
-          printf("Error: Data ID not known: %d", header.data_id);
+          printf("Error: Data ID not known: %d\n", header.data_id);
           break;
       }
     }

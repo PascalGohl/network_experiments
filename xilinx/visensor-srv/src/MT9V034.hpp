@@ -11,10 +11,11 @@
 #include <string>
 
 #include "I2CBusRaw.h"
+#include "Sensor.hpp"
 
-class MT9V034 {
+class MT9V034: public Sensor {
 public:
-	MT9V034();
+	MT9V034(int register_address);
 	virtual ~MT9V034();
 
 	void power_on();
